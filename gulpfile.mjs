@@ -659,6 +659,7 @@ const collectTags = async (galleryPath) => {
 
   const tags = []
   const tagsToGalleries = {}
+  let newTag
 
   for (const pathToGalleryJson of galleryJsonFiles) {
     const gallery = readGalleryJson(pathToGalleryJson)
