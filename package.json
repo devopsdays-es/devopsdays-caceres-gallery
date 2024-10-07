@@ -1,0 +1,70 @@
+{
+  "name": "noobgallery",
+  "version": "0.4.2",
+  "description": "A minimalistic photo gallery with images stored on Amazon S3 and just the features you want.",
+  "main": "index.js",
+  "scripts": {
+    "build": "gulp build",
+    "start": "http-server ./build/ -p 3000",
+    "deploy": "gulp deploy",
+    "only:publishAWS": "gulp publishAWS"
+  },
+  "keywords": [
+    "gallery",
+    "photography",
+    "node.js",
+    "nextjs",
+    "Amazon S3"
+  ],
+  "private": false,
+  "author": "Brendan Nee <brendan@blinktag.com> (https://picturethecity.com)",
+  "contributors": [
+    "Sean Ryan <str_ie@yahoo.co.uk> (https://everydayphotos.net)"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "concurrent-transform": "^1.0.0",
+    "del": "^7.1.0",
+    "dotenv": "^16.4.5",
+    "exif-parser": "^0.1.12",
+    "fancy-log": "^2.0.0",
+    "glob": "^10.4.1",
+    "gulp": "^4.0.2",
+    "gulp-awspublish": "^8.0.0",
+    "gulp-debug": "^5.0.1",
+    "gulp-file": "^0.4.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-pug": "^5.0.0",
+    "gulp-rename": "^2.0.0",
+    "http-server": "^14.1.1",
+    "imagesloaded": "^5.0.0",
+    "lg-autoplay.js": "^1.2.0",
+    "lg-fullscreen.js": "^1.2.0",
+    "lg-hash.js": "^1.0.0",
+    "lg-pager.js": "^1.0.0",
+    "lg-share.js": "^1.3.0",
+    "lg-thumbnail.js": "^1.2.0",
+    "lg-zoom.js": "^1.3.0",
+    "lightgallery.js": "^1.4.0",
+    "lodash": "^4.17.21",
+    "masonry-layout": "^4.2.2",
+    "merge-stream": "^2.0.0",
+    "moment": "^2.30.1",
+    "plugin-error": "^2.0.1",
+    "sharp": "^0.33.4",
+    "through2": "^4.0.2",
+    "untildify": "^5.0.0",
+    "vinyl": "^3.0.0",
+    "xmp-reader": "0.0.3"
+  },
+  "release-it": {
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/keep-a-changelog": {
+        "filename": "CHANGELOG.md"
+      }
+    }
+  }
+}
