@@ -15,14 +15,13 @@ const galleryUsEast1Stack = new GalleryUsEast1Stack(
     description:
       "DevopsDays gallery resources that needs to forcly be in us-east-1",
     env: { account: process.env.CDK_DEFAULT_ACCOUNT },
-  }
+  },
 );
 cdk.Aspects.of(galleryUsEast1Stack).add(new Tagger({ stage: Stage.PROD }));
 
 const galleryStack = new GalleryStack(app, "GalleryStack", {
   stackName: "GalleryStack",
-  description:
-    "DevopsDays gallery website resources",
+  description: "DevopsDays gallery website resources",
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION,
