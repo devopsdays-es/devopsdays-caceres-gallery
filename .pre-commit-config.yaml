@@ -32,5 +32,5 @@ repos:
       - id: eslint
         name: Typescript linter
         language: system
-        entry: cd infra/ && yarn lint
+        entry: yarn lint
         files: \.ts$
