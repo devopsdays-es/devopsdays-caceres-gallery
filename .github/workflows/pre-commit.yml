@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          filter: devopsdays-photos/*
+          sparse-checkout: "!devopsdays-gallery/"
 
       - name: Use Node.js
         uses: actions/setup-node@v4.0.4
