@@ -9,6 +9,4 @@ enum Stage {
   GLOBAL = "global",
 }
 
-export {
-  Stage,
-};
+export { Stage };

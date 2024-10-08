@@ -66,7 +66,7 @@ gallery_root_folder
 │   ├── cover.jpg
 │   ├── file2.jpg
 │   └── file3.jpg
-└── barcelona   
+└── barcelona  
     ├── file1.jpg
     ├── file2.jpg
     └── file3.jpg
@@ -121,7 +121,7 @@ To run locally
 yarn start
 ```
 
-Open http://localhost:3000 in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Deploying
 

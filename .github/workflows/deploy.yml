@@ -1,0 +1,121 @@
+---
+name: "Deploy"
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "infra/**"
+      - ".github/**"
+      - ".env*"
+      - ".pre-commit-config.yaml"
+      - "README.md"
+
+concurrency:
+  # Concurrency control
+  group: deploy-prod-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  STAGE: prod
+  BUCKET_NAME: devopsdays-gallery
+  CLOUDFRONT_ID: ${{ secrets.CLOUDFRONT_ID }}
+
+permissions:
+  id-token: write
+  contents: write
+  deployments: write
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: (Event) Start Deploy
+        uses: bobheadxi/deployments@v1.5.0
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: ${{ env.STAGE }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.0.4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: (Install) Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+
+      - name: (Staging) Setup environment configuration
+        run: |
+          tee -a .env << END
+          GALLERY_TITLE=DevopsDays Cáceres
+          GALLERY_DESCRIPTION=Events photos
+          GALLERY_LOCAL_PATH=${{ github.action_path }}/devopsdays-photos
+          AWS_REGION=eu-west-1
+          AWS_BUCKET=${{ env.BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID
+          AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY
+          USE_INDEX_FILE=true
+          FORCE_HTTPS=false
+          SHOW_ABOUT_PAGE=true
+          SHOW_CREATED_DATE=true
+          # For CloudFront distribution without a lambda function
+          ALWAYS_ADD_INDEX_HTML_FOR_CLOUD_FRONT=true
+          END
+
+      - name: (Build) Build website
+        run: |
+          yarn build
+
+      - name: (Setup) AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: ${{ vars.OPENID_GITHUBGALLERYDEPLOYROLE }}
+          role-session-name: deploy-gallery
+          aws-region: eu-west-1
+
+      - name: (Deploy) Push Contents to S3
+        run: |
+          aws s3 rm s3://${{ env.BUCKET_NAME }}/ --recursive
+          aws s3 cp ./build/ s3://${{ env.BUCKET_NAME }}/ --recursive
+
+      - name: (Deploy) Invalidate CloudFront Cache
+        run: |
+          INVALIDATION_ID=$(aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_ID }} \
+            --paths "/*" \
+            --query 'Invalidation.Id' \
+            --output text)
+
+          INVALIDATION_STATUS=$(aws cloudfront get-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_ID }} \
+            --id $INVALIDATION_ID \
+            --query 'Invalidation.Status' \
+            --output text)
+
+          while [ "$INVALIDATION_STATUS" != "Completed" ]; do
+            sleep 30
+            INVALIDATION_STATUS=$(aws cloudfront get-invalidation \
+              --distribution-id ${{ env.CLOUDFRONT_ID }} \
+              --id $INVALIDATION_ID \
+              --query 'Invalidation.Status' \
+              --output text)
+          done
+
+      - name: (Event) Update Deploy Status
+        uses: bobheadxi/deployments@v1.5.0
+        if: always()
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          env: ${{ env.STAGE }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
