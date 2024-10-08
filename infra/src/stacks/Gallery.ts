@@ -22,53 +22,6 @@ export class GalleryStack extends cdk.Stack {
 
     const bucketName = "devopsdays-gallery";
 
-    const provider = new iam.CfnOIDCProvider(this, "GitHubIdentityProvider", {
-      url: "https://token.actions.githubusercontent.com",
-      clientIdList: ["sts.amazonaws.com"],
-    });
-
-    const cdkProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
-      this,
-      "cdkGitHubProvider",
-      provider.attrArn,
-    );
-
-    const principal = new iam.OpenIdConnectPrincipal(cdkProvider, {
-      StringLike: {
-        "token.actions.githubusercontent.com:sub":
-          "repo:devopsdays-es/devopsdays-caceres-gallery",
-      },
-    });
-
-    new iam.Role(this, "GitHubGalleryDeployRole", {
-      roleName: "GitHubGalleryDeployRole",
-      description: "Role to deploy the gallery from GitHub Actions",
-      assumedBy: principal,
-      path: "/automation/github/",
-      inlinePolicies: {
-        DeployPolicy: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              actions: ["s3:ListBucket"],
-              resources: [`arn:aws:s3:::${bucketName}`],
-            }),
-            new iam.PolicyStatement({
-              actions: [
-                "s3:PutObject",
-                "s3:PutObjectAcl",
-                "s3:GetObject",
-                "s3:GetObjectAcl",
-                "s3:DeleteObject",
-                "s3:ListMultipartUploadParts",
-                "s3:AbortMultipartUpload",
-              ],
-              resources: [`arn:aws:s3:::${bucketName}/*`],
-            }),
-          ],
-        }),
-      },
-    });
-
     const bucket = new s3.Bucket(this, "GalleryBucket", {
       bucketName,
       blockPublicAccess: {
@@ -107,6 +60,62 @@ export class GalleryStack extends cdk.Stack {
       ),
       zone,
       recordName: subDomain,
+    });
+
+    const provider = new iam.CfnOIDCProvider(this, "GitHubIdentityProvider", {
+      url: "https://token.actions.githubusercontent.com",
+      clientIdList: ["sts.amazonaws.com"],
+    });
+
+    const cdkProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
+      this,
+      "cdkGitHubProvider",
+      provider.attrArn,
+    );
+
+    const principal = new iam.OpenIdConnectPrincipal(cdkProvider, {
+      StringLike: {
+        "token.actions.githubusercontent.com:sub":
+          "repo:devopsdays-es/devopsdays-caceres-gallery:ref:refs/heads/main",
+      },
+    });
+
+    new iam.Role(this, "GitHubGalleryDeployRole", {
+      roleName: "GitHubGalleryDeployRole",
+      description: "Role to deploy the gallery from GitHub Actions",
+      assumedBy: principal,
+      path: "/automation/github/",
+      inlinePolicies: {
+        DeployPolicy: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              actions: [
+                "cloudfront:CreateInvalidation",
+                "cloudfront:GetInvalidation",
+              ],
+              resources: [
+                `arn:aws:cloudfront::${cdk.Aws.ACCOUNT_ID}:distribution/${cdn.distributionId}`,
+              ],
+            }),
+            new iam.PolicyStatement({
+              actions: ["s3:ListBucket"],
+              resources: [`arn:aws:s3:::${bucketName}`],
+            }),
+            new iam.PolicyStatement({
+              actions: [
+                "s3:PutObject",
+                "s3:PutObjectAcl",
+                "s3:GetObject",
+                "s3:GetObjectAcl",
+                "s3:DeleteObject",
+                "s3:ListMultipartUploadParts",
+                "s3:AbortMultipartUpload",
+              ],
+              resources: [`arn:aws:s3:::${bucketName}/*`],
+            }),
+          ],
+        }),
+      },
     });
   }
 }
