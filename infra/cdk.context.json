@@ -1,0 +1,10 @@
+{
+  "hosted-zone:account=443156220146:domainName=devopsdays.es:region=eu-west-1": {
+    "Id": "/hostedzone/Z073966822WQPQSOEPC30",
+    "Name": "devopsdays.es."
+  },
+  "hosted-zone:account=443156220146:domainName=devopsdays.es:region=us-east-1": {
+    "Id": "/hostedzone/Z073966822WQPQSOEPC30",
+    "Name": "devopsdays.es."
+  }
+}
