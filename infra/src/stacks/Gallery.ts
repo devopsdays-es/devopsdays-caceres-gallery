@@ -30,7 +30,7 @@ export class GalleryStack extends cdk.Stack {
     const cdkProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
       this,
       "cdkGitHubProvider",
-      provider.attrArn
+      provider.attrArn,
     );
 
     const principal = new iam.OpenIdConnectPrincipal(cdkProvider, {
@@ -103,7 +103,7 @@ export class GalleryStack extends cdk.Stack {
     new route53.ARecord(this, "AliasRecord", {
       comment: "DevopsDays Cáceres gallery alias record",
       target: route53.RecordTarget.fromAlias(
-        new route53Targets.CloudFrontTarget(cdn)
+        new route53Targets.CloudFrontTarget(cdn),
       ),
       zone,
       recordName: subDomain,
