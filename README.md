@@ -1,9 +1,7 @@
 # DevopsDays gallery
 
 [![Checks, linters and formatters](https://github.com/devopsdays-es/devopsdays-caceres-gallery/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/devopsdays-es/devopsdays-caceres-gallery/actions/workflows/pre-commit.yml)
-
 [![Deploy](https://github.com/devopsdays-es/devopsdays-caceres-gallery/actions/workflows/deploy.yml/badge.svg)](https://github.com/devopsdays-es/devopsdays-caceres-gallery/actions/workflows/deploy.yml)
-
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=devopsdays-es_devopsdays-caceres-gallery&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=devopsdays-es_devopsdays-caceres-gallery)
 
 Implemented using [noobgallery](https://github.com/brendannee/noobgallery).
