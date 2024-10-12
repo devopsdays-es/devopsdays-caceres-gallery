@@ -2,7 +2,6 @@
 name: "Deploy"
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
@@ -54,7 +53,7 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
-      - name: (Staging) Setup environment configuration
+      - name: (Setup) Setup environment configuration
         run: |
           tee -a .env << END
           GALLERY_TITLE=DevopsDays Cáceres
@@ -70,6 +69,7 @@ jobs:
           SHOW_CREATED_DATE=true
           # For CloudFront distribution without a lambda function
           ALWAYS_ADD_INDEX_HTML_FOR_CLOUD_FRONT=true
+          GOOGLE_ANALYTICS_ID=${{ secrets.GOOGLE_ANALYTICS_ID }}
           END
 
       - name: (Build) Build website
